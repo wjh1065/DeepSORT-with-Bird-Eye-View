@@ -30,3 +30,10 @@ DeepSORT with Biry Eye View (BEV)
   유사도 측정 방법으로는 식 1과 같은 Euclidean distance를 사용할 예정.
   
   각 카메라들의 위치를 고려하여 1번 카메라의 경우 식 2와 같이, 2번 카메라의 경우 식 3과 같이 매칭을 진행. 매칭이 완료된 좌표들은 전체 BEV 이미지와 같이 각 카메라 간의 중첩지역에서 객체가 검출될 시 Euclidean distance를 측정하여 각 카메라에서 추적되는 같은 ID를 가진 물체들과 remapping 시켜줌으로써 물체 간의 중첩으로 인해 발생하는 객체 검출 및 추적 실패를 방지할 수 있음.
+
+
+#### References  
+
+   Huge shoutout goes to hunglc007 and nwojke for creating the backbones of this repository:
+  * [tensorflow-yolov4-tflite](https://github.com/hunglc007/tensorflow-yolov4-tflite)
+  * [Deep SORT Repository](https://github.com/nwojke/deep_sort)
