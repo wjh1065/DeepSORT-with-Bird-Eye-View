@@ -45,7 +45,7 @@ def bird_eye_view(bottom_points):
         blank_image = cv2.circle(blank_image, (int(i[0] * scale_w), int(i[1] * scale_h)), 5, green, 10)
     return blank_image
 ```
-
+![ex_screenshot](./img/BEV.png)
 
 
 # 2. Object Detection and Tracking
