@@ -45,7 +45,7 @@ def bird_eye_view(bottom_points):
         blank_image = cv2.circle(blank_image, (int(i[0] * scale_w), int(i[1] * scale_h)), 5, green, 10)
     return blank_image
 ```
-![ex_screenshot](./img/BEV.png)
+<p align="center"><img src = "./img/BEV.png" width="70%" height="70%"></center></>
 
 
 # 2. Object Detection and Tracking
@@ -53,23 +53,32 @@ def bird_eye_view(bottom_points):
   
   물체 추적 시 두 물체의 겹침이 발생하면 물체들을 나누어 인식하여 매칭시켜주는 기능(identity Matching)이 정확히 이뤄지지 않는 문제가 발생하는데 이를 해결하기 위해, 두 물체 사이의 유사성을 판단할 수 있는 방법을 사용하여 문제를 극복하고자 함.
   
-  -- image --
-  
+<p align="center"><img src = "./img/detection.png" width="100%" height="100%"></center></>
+ 
+ 
+ 
 > ### 2.1 선택된 DeepSORT의 구조
   DeepSORT는 YOLO V4를 이용하여 Object Detection을 하는 것과 함께, Multi-Object Tracking을 지원하는 알고리즘임. 트래킹의 경우는 기본적으로 __Kalman Filter__ 를 사용하고 있으며, __deep appearance descriptor__ 를 이용하여 물체의 유사도를 측정하고, __Hungarian Assignment algorithm__ 을 이용하여 여러 프레임에 걸쳐 나타나는 물체들의 __*identity matching*__ 을 지원하고 있음.
   
   그러나, DeepSORT 알고리즘의 Kalman Filter와 identity matching은 __단일 카메라__ 상에서 보이는 이미지에서만 가능하고, 카메라 외부와의 연결 및 다른 여러 대의 카메라에서의 데이터는 융합하지는 못함.
-  
+
+
+ <p align="center"><img src = "./img/deepsort.png" width="100%" height="100%"></center></>*그림 출처: https://medium.com/augmented-startups/deepsort-deep-learning-applied-to-object-tracking-924f59f99104 *
+ 
 # 3. Multi cam
   단일 카메라가 아닌 2대 이상의 카메라를 사용함.
   
   객체 검출 및 추적 시 __사람 간의 가림 또는 중첩 현상__ 으로 사각지대가 발생하였을 때 멀티 카메라 상황에서는 다른 카메라가 이러한 사각지대를 채워줌으로 검출 및 추적 성능을 높일 수 있을 것임.
    
+<p align="center"><img src = "./img/multi.png" width="100%" height="100%"></center></>*시연 동영상 : https://youtu.be/xokeYEJiCZA *
+   
    
 # 4. Future work... (Similarity)
   멀티 캠 상황에서, 각 카메라에서 추출된 물체의 위치 정보를 하나의 공간에 투사하고 서로 연결시키기 위해서 BEV를 통해 변환하고, BEV 과정을 통해 변환된 좌표들 사이의 유사성(Similarity)을 이용하여 Remapping을 시행할 예정.
   
-  유사도 측정 방법으로는 식 1과 같은 Euclidean distance를 사용할 예정.
+  유사도 측정 방법으로는 아래와 같은 Euclidean distance를 사용할 예정.
+  
+  > <p align="center"><img src = "./img/sim.png" width="50%" height="50%"></center></>
   
   각 카메라들의 위치를 고려하여 1번 카메라의 경우 식 2와 같이, 2번 카메라의 경우 식 3과 같이 매칭을 진행. 매칭이 완료된 좌표들은 전체 BEV 이미지와 같이 각 카메라 간의 중첩지역에서 객체가 검출될 시 Euclidean distance를 측정하여 각 카메라에서 추적되는 같은 ID를 가진 물체들과 remapping 시켜줌으로써 물체 간의 중첩으로 인해 발생하는 객체 검출 및 추적 실패를 방지할 수 있음.
 
@@ -79,3 +88,25 @@ def bird_eye_view(bottom_points):
    Huge shoutout goes to hunglc007 and nwojke for creating the backbones of this repository:
   * [tensorflow-yolov4-tflite](https://github.com/hunglc007/tensorflow-yolov4-tflite)
   * [Deep SORT Repository](https://github.com/nwojke/deep_sort)
+
+#### Citing DeepSORT
+
+    @inproceedings{Wojke2017simple,
+      title={Simple Online and Realtime Tracking with a Deep Association Metric},
+      author={Wojke, Nicolai and Bewley, Alex and Paulus, Dietrich},
+      booktitle={2017 IEEE International Conference on Image Processing (ICIP)},
+      year={2017},
+      pages={3645--3649},
+      organization={IEEE},
+      doi={10.1109/ICIP.2017.8296962}
+    }
+
+    @inproceedings{Wojke2018deep,
+      title={Deep Cosine Metric Learning for Person Re-identification},
+      author={Wojke, Nicolai and Bewley, Alex},
+      booktitle={2018 IEEE Winter Conference on Applications of Computer Vision (WACV)},
+      year={2018},
+      pages={748--756},
+      organization={IEEE},
+      doi={10.1109/WACV.2018.00087}
+    }
