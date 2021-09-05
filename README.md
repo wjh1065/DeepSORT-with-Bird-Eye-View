@@ -1,10 +1,52 @@
 DeepSORT with Biry Eye View (BEV)
  ====================
- # 1. Bird Eye View
-  __BEV는 기하학적 변환으로 위에서 아래로 내려다보는 top-view를 말한다.__
+ # 1. Bird Eye View & Bottom points
+  __*BEV는 기하학적 변환으로 위에서 아래로 내려다보는 top-view를 말한다.*__
   
   여러 대의 CCTV에서 높이와 각도 때문에 동일한 사람을 매칭시키는데 어려움이 있으며, 관측자에게도 보다 나은 시각적 결과를 제공하기 위해 검출된 여러 CCTV들에 대해 BEV를 적용함.
  
+ __Object detection에서 획득한 바운딩 박스로부터 하단 좌표(bottom point)를 구하고 BEV에 적용함.__
+ 
+``` python
+def get_transformed_points(boxes, prespective_transform):
+    bottom_points = []
+    # print('boxes : ',boxes)
+    for box in boxes:
+        # print('1. box : ',box)
+        pnts = np.array([[[int((box[0] + box[2]) * 0.5), int((box[1] + box[3]) * 0.5)]]], dtype="float32")
+        # print('2. pnts : ', pnts)
+        bd_pnt = cv2.perspectiveTransform(pnts, prespective_transform)[0][0]
+        # print('prespective_transform : ', prespective_transform)
+        pnt = [int(bd_pnt[0]), int(bd_pnt[1])]
+        # print('3. pnt : ',pnt)
+        bottom_points.append(pnt)
+
+    return bottom_points
+``` 
+
+
+``` python
+def bird_eye_view(bottom_points):
+    w = 720
+    h = 1280
+
+    red = (0, 0, 255)
+    green = (0, 255, 0)
+    yellow = (0, 255, 255)
+    white = (200, 200, 200)
+
+    # scale_w = 0.3125
+    # scale_h = 1.0
+    scale_w, scale_h = get_scale(w, h)
+    blank_image = np.zeros((640,360, 3), np.uint8)
+    blank_image[:] = white
+
+    for i in bottom_points:
+        blank_image = cv2.circle(blank_image, (int(i[0] * scale_w), int(i[1] * scale_h)), 5, green, 10)
+    return blank_image
+```
+
+
 
 # 2. Object Detection and Tracking
   최근 다중 물체 인식 및 추적 성능이 좋다고 알려진 딥러닝 알고리즘에는 __*YOLO, Detectron, Alphapose, DeepSORT*__ ..등 여러 종류의 알고리즘이 있다.
